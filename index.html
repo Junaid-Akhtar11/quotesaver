@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Saver</title>
+    <link rel="stylesheet" href="quotesaver.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Quote Keeper</h1>
+            <p>Type it. Save it. Click to delete it.</p>
+        </header>
+
+        <form id="quote-form">
+            <div class="input-group">
+                <label for="quote-text">The Quote</label>
+                <textarea id="quote-text" placeholder="Enter your quote here..." required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="author-text">The Author</label>
+                <input type="text" id="author-text" placeholder="- Author Name" required>
+            </div>
+
+            <button type="submit" id="saveQuote">Save Quote</button>
+        </form>
+
+        <hr>
+
+        <div id="quote-list">
+            <div class="quote-item placeholder">
+                <p class="text">"Your saved quotes will appear here."</p>
+                <span class="author">- System</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quoteInput = document.querySelector("#quote-text");
+        const authorInput = document.querySelector("#author-text");
+        const saveBtn = document.querySelector("#saveQuote");
+        const list = document.querySelector("#quote-list");
+
+        let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+        function render() {
+            list.innerHTML = "";
+            quotes.forEach((q, i) => {
+                list.innerHTML += `
+        <div class="quote-item" data-index="${i}">
+            <p class="text">"${q.text}"</p> 
+            <span class="author">- ${q.author}</span>
+        </div>`;
+            });
+        }
+
+        saveBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            let text = quoteInput.value;
+            let author = authorInput.value;
+
+            if (text && author) {
+                quotes.push({ text, author });
+                localStorage.setItem("quotes", JSON.stringify(quotes));
+                render();
+                quoteInput.value = "";
+                authorInput.value = "";
+            }
+        });
+
+        list.addEventListener("click", function (e) {
+            let item = e.target.closest(".quote-item");
+            if (item) {
+                let index = item.dataset.index;
+                quotes.splice(index, 1);
+                localStorage.setItem("quotes", JSON.stringify(quotes));
+                render();
+            }
+        });
+
+        render();
+    </script>
+</body>
+
+</html>
